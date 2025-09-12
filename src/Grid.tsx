@@ -5,7 +5,7 @@ type GridProps = { children: ReactNode };
 export default function Grid({ children }: GridProps) {
   return (
     <>
-      <div className="relative grid h-150 w-150 grid-cols-9 grid-rows-9 gap-1 overflow-hidden rounded-3xl bg-slate-100 select-none">
+      <div className="relative grid h-150 w-150 grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl select-none">
         {children}
         <div
           className="absolute h-1 w-full bg-slate-300"

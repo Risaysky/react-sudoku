@@ -7,24 +7,29 @@ const puzzle = puzzles.split("\n")[0].split(" ")[1].split("");
 
 export default function App() {
   const [solveDigits, setSolveDigits] = useState(puzzle);
+  const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
 
-  function syncSolveDigit(solveDigit: string, index: number) {
-    setSolveDigits((digits) => {
-      const temp = [...digits];
-      temp[index] = solveDigit;
-      return temp;
-    });
+  function calcSameDigitHighlight(digit: string) {
+    if (focusedIndex === null || digit === "0") return false;
+    return solveDigits[focusedIndex] === digit;
+  }
+
+  function handleFocus(index: number) {
+    setFocusedIndex(index);
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-600">
       <Grid>
-        {puzzle.map((d, i) => (
+        {solveDigits.map((d, i) => (
           <Square
             key={i}
-            baseDigit={d}
             index={i}
-            syncSolveDigit={syncSolveDigit}
+            isPresolved={puzzle[i] !== "0"}
+            digit={d}
+            geometryHighlight={false}
+            sameDigitHighlight={calcSameDigitHighlight(d)}
+            onFocus={handleFocus}
           />
         ))}
       </Grid>
