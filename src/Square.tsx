@@ -13,13 +13,24 @@ export default function Square({
   highlight,
   onFocus,
 }: SquareProps) {
-  let highlightClass = "bg-slate-50";
-  if (highlight === "same-digit") highlightClass = "bg-lime-400";
-  if (highlight === "focus") highlightClass = "bg-lime-300";
+  let highlightClass;
+  switch (highlight) {
+    case "focus":
+      highlightClass = "bg-sky-500/40";
+      break;
+    case "same-digit":
+      highlightClass = "bg-sky-600/40";
+      break;
+    case "geometry":
+      highlightClass = "bg-sky-300/30";
+      break;
+    default:
+      break;
+  }
 
   return (
     <div
-      className={`content-center text-center text-3xl focus:outline-none ${highlightClass}`}
+      className={`opacity content-center text-center text-4xl focus:outline-none ${highlightClass}`}
       onFocus={() => {
         onFocus(index);
       }}

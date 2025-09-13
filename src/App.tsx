@@ -4,6 +4,7 @@ import Grid from "./Grid";
 import Square from "./Square";
 
 const puzzle = puzzles.split("\n")[0].split(" ")[1].split("");
+const cellStartIndices = [0, 3, 6, 27, 30, 33, 54, 54, 57, 60];
 
 export default function App() {
   const [solveDigits, setSolveDigits] = useState(puzzle);
@@ -11,9 +12,48 @@ export default function App() {
 
   function calcHighlight(digit: string, index: number) {
     if (index === focusedIndex) return "focus";
-    if (focusedIndex === null || digit === "0") return "";
-    if (solveDigits[focusedIndex] === digit && focusedIndex !== index)
+
+    if (focusedIndex === null) return "";
+
+    if (
+      solveDigits[focusedIndex] === digit &&
+      focusedIndex !== index &&
+      digit !== "0"
+    )
       return "same-digit";
+
+    if (
+      index % 9 === focusedIndex % 9 ||
+      Math.floor(index / 9) === Math.floor(focusedIndex / 9)
+    )
+      return "geometry";
+
+    let squareCell;
+    let focusedCell;
+
+    for (const i of cellStartIndices) {
+      if (
+        (focusedIndex >= i && focusedIndex < i + 3) ||
+        (focusedIndex >= i + 9 && focusedIndex < i + 3 + 9) ||
+        (focusedIndex >= i + 18 && focusedIndex < i + 3 + 18)
+      ) {
+        focusedCell = i;
+        break;
+      }
+    }
+
+    for (const i of cellStartIndices) {
+      if (
+        (index >= i && index < i + 3) ||
+        (index >= i + 9 && index < i + 3 + 9) ||
+        (index >= i + 18 && index < i + 3 + 18)
+      ) {
+        squareCell = i;
+        break;
+      }
+    }
+    if (focusedCell === squareCell) return "geometry";
+
     return "";
   }
 
@@ -24,6 +64,14 @@ export default function App() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (focusedIndex === null || puzzle[focusedIndex] !== "0") return;
+      if (e.key === "Backspace" || e.key === solveDigits[focusedIndex]) {
+        setSolveDigits((solveDigits) => {
+          const temp = [...solveDigits];
+          temp[focusedIndex] = "0";
+          return temp;
+        });
+        return;
+      }
       if (e.key.match(/^[1-9]$/)) {
         setSolveDigits((solveDigits) => {
           const temp = [...solveDigits];
@@ -31,17 +79,10 @@ export default function App() {
           return temp;
         });
       }
-      if (e.key === "Backspace") {
-        setSolveDigits((solveDigits) => {
-          const temp = [...solveDigits];
-          temp[focusedIndex] = "0";
-          return temp;
-        });
-      }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [focusedIndex]);
+  }, [focusedIndex, solveDigits]);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-600">
