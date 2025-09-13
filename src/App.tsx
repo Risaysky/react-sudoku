@@ -63,7 +63,20 @@ export default function App() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (focusedIndex === null || puzzle[focusedIndex] !== "0") return;
+      if (focusedIndex === null) return;
+
+      if (e.key === "ArrowUp" && focusedIndex > 8) {
+        setFocusedIndex(focusedIndex - 9);
+      } else if (e.key === "ArrowDown" && focusedIndex < 72) {
+        setFocusedIndex(focusedIndex + 9);
+      } else if (e.key === "ArrowRight" && (focusedIndex + 1) % 9 !== 0) {
+        setFocusedIndex(focusedIndex + 1);
+      } else if (e.key === "ArrowLeft" && focusedIndex % 9 !== 0) {
+        setFocusedIndex(focusedIndex - 1);
+      }
+
+      if (puzzle[focusedIndex] !== "0") return;
+
       if (e.key === "Backspace" || e.key === solveDigits[focusedIndex]) {
         setSolveDigits((solveDigits) => {
           const temp = [...solveDigits];
@@ -78,6 +91,7 @@ export default function App() {
           temp[focusedIndex] = e.key;
           return temp;
         });
+        return;
       }
     }
     document.addEventListener("keydown", handleKeyDown);
