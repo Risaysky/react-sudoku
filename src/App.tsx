@@ -9,9 +9,12 @@ export default function App() {
   const [solveDigits, setSolveDigits] = useState(puzzle);
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
 
-  function calcSameDigitHighlight(digit: string, index: number) {
-    if (focusedIndex === null || digit === "0") return false;
-    return solveDigits[focusedIndex] === digit && focusedIndex !== index;
+  function calcHighlight(digit: string, index: number) {
+    if (index === focusedIndex) return "focus";
+    if (focusedIndex === null || digit === "0") return "";
+    if (solveDigits[focusedIndex] === digit && focusedIndex !== index)
+      return "same-digit";
+    return "";
   }
 
   function handleFocus(index: number) {
@@ -20,12 +23,21 @@ export default function App() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (focusedIndex === null || !e.key.match(/^\d$/)) return;
-      setSolveDigits((digs) => {
-        const temp = [...digs];
-        temp[focusedIndex] = e.key;
-        return temp;
-      });
+      if (focusedIndex === null || puzzle[focusedIndex] !== "0") return;
+      if (e.key.match(/^[1-9]$/)) {
+        setSolveDigits((solveDigits) => {
+          const temp = [...solveDigits];
+          temp[focusedIndex] = e.key;
+          return temp;
+        });
+      }
+      if (e.key === "Backspace") {
+        setSolveDigits((solveDigits) => {
+          const temp = [...solveDigits];
+          temp[focusedIndex] = "0";
+          return temp;
+        });
+      }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
@@ -40,9 +52,7 @@ export default function App() {
             index={i}
             isPresolved={puzzle[i] !== "0"}
             digit={d}
-            focusHighlight={i === focusedIndex}
-            geometryHighlight={false}
-            sameDigitHighlight={calcSameDigitHighlight(d, i)}
+            highlight={calcHighlight(d, i)}
             onFocus={handleFocus}
           />
         ))}
