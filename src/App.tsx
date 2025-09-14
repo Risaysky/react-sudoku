@@ -7,6 +7,26 @@ const puzzle = puzzles.split("\n")[2].split(" ")[1].split("");
 const cellStartIndices = [0, 3, 6, 27, 30, 33, 54, 54, 57, 60];
 const initialConflictedDigits = Array.from({ length: 81 }, () => false);
 
+function getCell(index: number) {
+  for (const i of cellStartIndices) {
+    if (
+      (index >= i && index < i + 3) ||
+      (index >= i + 9 && index < i + 3 + 9) ||
+      (index >= i + 18 && index < i + 3 + 18)
+    ) {
+      return i;
+    }
+  }
+}
+
+function getRow(index: number) {
+  return Math.floor(index / 9);
+}
+
+function getColumn(index: number) {
+  return index % 9;
+}
+
 export default function App() {
   const [solveDigits, setSolveDigits] = useState(puzzle);
   const [conflictedDigits, setConflictedDigits] = useState(
@@ -26,34 +46,10 @@ export default function App() {
     )
       return "same-digit";
 
-    let squareCell;
-    let focusedCell;
-
-    for (const i of cellStartIndices) {
-      if (
-        (focusedIndex >= i && focusedIndex < i + 3) ||
-        (focusedIndex >= i + 9 && focusedIndex < i + 3 + 9) ||
-        (focusedIndex >= i + 18 && focusedIndex < i + 3 + 18)
-      ) {
-        focusedCell = i;
-        break;
-      }
-    }
-
-    for (const i of cellStartIndices) {
-      if (
-        (index >= i && index < i + 3) ||
-        (index >= i + 9 && index < i + 3 + 9) ||
-        (index >= i + 18 && index < i + 3 + 18)
-      ) {
-        squareCell = i;
-        break;
-      }
-    }
     if (
-      focusedCell === squareCell ||
-      index % 9 === focusedIndex % 9 ||
-      Math.floor(index / 9) === Math.floor(focusedIndex / 9)
+      getCell(index) === getCell(focusedIndex) ||
+      getColumn(index) === getColumn(focusedIndex) ||
+      getRow(index) === getRow(focusedIndex)
     )
       return "geometry";
 
@@ -102,47 +98,23 @@ export default function App() {
   }, [focusedIndex, solveDigits]);
 
   useEffect(() => {
-    const conflictAcc = [...initialConflictedDigits];
+    const conflictedAcc = [...initialConflictedDigits];
     for (const [index1, digit1] of solveDigits.entries()) {
       if (digit1 === "0") continue;
-      let cell1;
-      for (const i of cellStartIndices) {
-        if (
-          (index1 >= i && index1 < i + 3) ||
-          (index1 >= i + 9 && index1 < i + 3 + 9) ||
-          (index1 >= i + 18 && index1 < i + 3 + 18)
-        ) {
-          cell1 = i;
-          break;
-        }
-      }
+      const cell1 = getCell(index1);
       for (const [index2, digit2] of solveDigits.entries()) {
         if (index1 === index2) continue;
-
-        let cell2;
-
-        for (const i of cellStartIndices) {
-          if (
-            (index2 >= i && index2 < i + 3) ||
-            (index2 >= i + 9 && index2 < i + 3 + 9) ||
-            (index2 >= i + 18 && index2 < i + 3 + 18)
-          ) {
-            cell2 = i;
-            break;
-          }
-        }
-
         if (
-          (cell1 === cell2 ||
-            index2 % 9 === index1 % 9 ||
-            Math.floor(index2 / 9) === Math.floor(index1 / 9)) &&
+          (cell1 === getCell(index2) ||
+            getColumn(index1) === getColumn(index2) ||
+            getRow(index1) === getRow(index2)) &&
           digit1 === digit2
         )
-          conflictAcc[index1] = true;
+          conflictedAcc[index1] = true;
       }
     }
-    if (JSON.stringify(conflictAcc) !== JSON.stringify(conflictedDigits))
-      setConflictedDigits(conflictAcc);
+    if (JSON.stringify(conflictedAcc) !== JSON.stringify(conflictedDigits))
+      setConflictedDigits(conflictedAcc);
   }, [conflictedDigits, solveDigits]);
 
   return (
