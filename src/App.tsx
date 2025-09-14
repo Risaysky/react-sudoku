@@ -37,7 +37,7 @@ export default function App() {
   function calcHighlight(digit: string, index: number) {
     if (index === focusedIndex) return "focus";
 
-    if (focusedIndex === null) return null;
+    if (focusedIndex === null) return "default";
 
     if (
       solveDigits[focusedIndex] === digit &&
@@ -53,7 +53,7 @@ export default function App() {
     )
       return "geometry";
 
-    return null;
+    return "default";
   }
 
   function handleFocus(index: number) {

@@ -1,9 +1,23 @@
+const nonConflictedStyle = {
+  default: "",
+  focus: "bg-sky-500/40",
+  "same-digit": "bg-sky-600/30",
+  geometry: "bg-sky-300/30",
+};
+
+const conflictedStyle = {
+  default: "bg-red-400/40",
+  focus: "bg-sky-500/40",
+  "same-digit": "bg-red-400/40",
+  geometry: "bg-red-400/40",
+};
+
 type SquareProps = {
   index: number;
   isPresolved: boolean;
   isConflicted: boolean;
   digit: string;
-  highlight: "focus" | "same-digit" | "geometry" | null;
+  highlight: "focus" | "same-digit" | "geometry" | "default";
   onFocus: (index: number) => void;
 };
 
@@ -15,20 +29,9 @@ export default function Square({
   highlight,
   onFocus,
 }: SquareProps) {
-  let highlightClass;
-  switch (highlight) {
-    case "focus":
-      highlightClass = "bg-sky-500/40";
-      break;
-    case "same-digit":
-      highlightClass = "bg-sky-600/30";
-      break;
-    case "geometry":
-      highlightClass = "bg-sky-300/30";
-      break;
-    default:
-      break;
-  }
+  const highlightClass = isConflicted
+    ? conflictedStyle[highlight]
+    : nonConflictedStyle[highlight];
 
   return (
     <div
