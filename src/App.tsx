@@ -3,17 +3,21 @@ import puzzles from "./data/easy.txt?raw";
 import Grid from "./Grid";
 import Square from "./Square";
 
-const puzzle = puzzles.split("\n")[0].split(" ")[1].split("");
+const puzzle = puzzles.split("\n")[2].split(" ")[1].split("");
 const cellStartIndices = [0, 3, 6, 27, 30, 33, 54, 54, 57, 60];
+const initialConflictedDigits = Array.from({ length: 81 }, () => false);
 
 export default function App() {
   const [solveDigits, setSolveDigits] = useState(puzzle);
+  const [conflictedDigits, setConflictedDigits] = useState(
+    initialConflictedDigits,
+  );
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
 
   function calcHighlight(digit: string, index: number) {
     if (index === focusedIndex) return "focus";
 
-    if (focusedIndex === null) return "";
+    if (focusedIndex === null) return null;
 
     if (
       solveDigits[focusedIndex] === digit &&
@@ -21,12 +25,6 @@ export default function App() {
       digit !== "0"
     )
       return "same-digit";
-
-    if (
-      index % 9 === focusedIndex % 9 ||
-      Math.floor(index / 9) === Math.floor(focusedIndex / 9)
-    )
-      return "geometry";
 
     let squareCell;
     let focusedCell;
@@ -52,9 +50,14 @@ export default function App() {
         break;
       }
     }
-    if (focusedCell === squareCell) return "geometry";
+    if (
+      focusedCell === squareCell ||
+      index % 9 === focusedIndex % 9 ||
+      Math.floor(index / 9) === Math.floor(focusedIndex / 9)
+    )
+      return "geometry";
 
-    return "";
+    return null;
   }
 
   function handleFocus(index: number) {
@@ -98,6 +101,50 @@ export default function App() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [focusedIndex, solveDigits]);
 
+  useEffect(() => {
+    const conflictAcc = [...initialConflictedDigits];
+    for (const [index1, digit1] of solveDigits.entries()) {
+      if (digit1 === "0") continue;
+      let cell1;
+      for (const i of cellStartIndices) {
+        if (
+          (index1 >= i && index1 < i + 3) ||
+          (index1 >= i + 9 && index1 < i + 3 + 9) ||
+          (index1 >= i + 18 && index1 < i + 3 + 18)
+        ) {
+          cell1 = i;
+          break;
+        }
+      }
+      for (const [index2, digit2] of solveDigits.entries()) {
+        if (index1 === index2) continue;
+
+        let cell2;
+
+        for (const i of cellStartIndices) {
+          if (
+            (index2 >= i && index2 < i + 3) ||
+            (index2 >= i + 9 && index2 < i + 3 + 9) ||
+            (index2 >= i + 18 && index2 < i + 3 + 18)
+          ) {
+            cell2 = i;
+            break;
+          }
+        }
+
+        if (
+          (cell1 === cell2 ||
+            index2 % 9 === index1 % 9 ||
+            Math.floor(index2 / 9) === Math.floor(index1 / 9)) &&
+          digit1 === digit2
+        )
+          conflictAcc[index1] = true;
+      }
+    }
+    if (JSON.stringify(conflictAcc) !== JSON.stringify(conflictedDigits))
+      setConflictedDigits(conflictAcc);
+  }, [conflictedDigits, solveDigits]);
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-600">
       <Grid>
@@ -106,6 +153,7 @@ export default function App() {
             key={i}
             index={i}
             isPresolved={puzzle[i] !== "0"}
+            isConflicted={conflictedDigits[i]}
             digit={d}
             highlight={calcHighlight(d, i)}
             onFocus={handleFocus}

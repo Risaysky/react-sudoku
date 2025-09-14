@@ -1,14 +1,16 @@
 type SquareProps = {
   index: number;
   isPresolved: boolean;
+  isConflicted: boolean;
   digit: string;
-  highlight: string;
+  highlight: "focus" | "same-digit" | "geometry" | null;
   onFocus: (index: number) => void;
 };
 
 export default function Square({
   index,
   isPresolved,
+  isConflicted,
   digit,
   highlight,
   onFocus,
@@ -19,7 +21,7 @@ export default function Square({
       highlightClass = "bg-sky-500/40";
       break;
     case "same-digit":
-      highlightClass = "bg-sky-600/40";
+      highlightClass = "bg-sky-600/30";
       break;
     case "geometry":
       highlightClass = "bg-sky-300/30";
@@ -30,7 +32,7 @@ export default function Square({
 
   return (
     <div
-      className={`opacity content-center text-center text-4xl focus:outline-none ${highlightClass}`}
+      className={`opacity content-center text-center text-4xl focus:outline-none ${isPresolved ? "text-slate-900" : isConflicted ? "text-red-400" : "text-blue-500"} ${highlightClass}`}
       onFocus={() => {
         onFocus(index);
       }}
