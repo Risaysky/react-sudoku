@@ -4,27 +4,22 @@ import Grid from "./Grid";
 import Square from "./Square";
 
 const puzzle = puzzles.split("\n")[2].split(" ")[1].split("");
-const cellStartIndices = [0, 3, 6, 27, 30, 33, 54, 54, 57, 60];
 const initialConflictedDigits = Array.from({ length: 81 }, () => false);
+const GRID_WIDTH = 9;
+const CELL_WIDTH = 3;
 
 function getCell(index: number) {
-  for (const i of cellStartIndices) {
-    if (
-      (index >= i && index < i + 3) ||
-      (index >= i + 9 && index < i + 3 + 9) ||
-      (index >= i + 18 && index < i + 3 + 18)
-    ) {
-      return i;
-    }
-  }
+  const cellRow = Math.floor(getRow(index) / CELL_WIDTH);
+  const cellColumn = Math.floor(getColumn(index) / CELL_WIDTH);
+  return `${cellRow}-${cellColumn}`;
 }
 
 function getRow(index: number) {
-  return Math.floor(index / 9);
+  return Math.floor(index / GRID_WIDTH);
 }
 
 function getColumn(index: number) {
-  return index % 9;
+  return index % GRID_WIDTH;
 }
 
 export default function App() {
@@ -64,13 +59,19 @@ export default function App() {
     function handleKeyDown(e: KeyboardEvent) {
       if (focusedIndex === null) return;
 
-      if (e.key === "ArrowUp" && focusedIndex > 8) {
-        setFocusedIndex(focusedIndex - 9);
-      } else if (e.key === "ArrowDown" && focusedIndex < 72) {
-        setFocusedIndex(focusedIndex + 9);
-      } else if (e.key === "ArrowRight" && (focusedIndex + 1) % 9 !== 0) {
+      if (e.key === "ArrowUp" && getRow(focusedIndex) > 0) {
+        setFocusedIndex(focusedIndex - GRID_WIDTH);
+      } else if (
+        e.key === "ArrowDown" &&
+        getRow(focusedIndex) < GRID_WIDTH - 1
+      ) {
+        setFocusedIndex(focusedIndex + GRID_WIDTH);
+      } else if (
+        e.key === "ArrowRight" &&
+        getColumn(focusedIndex) < GRID_WIDTH - 1
+      ) {
         setFocusedIndex(focusedIndex + 1);
-      } else if (e.key === "ArrowLeft" && focusedIndex % 9 !== 0) {
+      } else if (e.key === "ArrowLeft" && getColumn(focusedIndex) > 0) {
         setFocusedIndex(focusedIndex - 1);
       }
 
@@ -84,6 +85,7 @@ export default function App() {
         });
         return;
       }
+
       if (e.key.match(/^[1-9]$/)) {
         setSolveDigits((solveDigits) => {
           const temp = [...solveDigits];

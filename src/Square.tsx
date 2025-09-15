@@ -29,13 +29,18 @@ export default function Square({
   highlight,
   onFocus,
 }: SquareProps) {
-  const highlightClass = isConflicted
+  const bgColor = isConflicted
     ? conflictedStyle[highlight]
     : nonConflictedStyle[highlight];
+  const textColor = isPresolved
+    ? "text-slate-900"
+    : isConflicted
+      ? "text-red-400"
+      : "text-blue-500";
 
   return (
     <div
-      className={`opacity content-center text-center text-4xl focus:outline-none ${isPresolved ? "text-slate-900" : isConflicted ? "text-red-400" : "text-blue-500"} ${highlightClass}`}
+      className={`opacity content-center text-center text-4xl focus:outline-none ${textColor} ${bgColor}`}
       onFocus={() => {
         onFocus(index);
       }}
