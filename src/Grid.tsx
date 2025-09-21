@@ -25,6 +25,9 @@ export default function Grid({ puzzle }: GridProps) {
   const [solveDigits, setSolveDigits] = useState(puzzle);
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
   const conflictedDigits = calcConflictedDigits();
+  const isWon =
+    solveDigits.every((digit) => digit !== "0") &&
+    conflictedDigits.every((conflict) => conflict === false);
 
   function calcConflictedDigits() {
     const conflictedAcc = [...initialConflictedDigits];
@@ -46,6 +49,8 @@ export default function Grid({ puzzle }: GridProps) {
   }
 
   function calcHighlight(digit: string, index: number) {
+    if (isWon) return "default";
+
     if (index === focusedIndex) return "focus";
 
     if (focusedIndex === null) return "default";
@@ -111,13 +116,15 @@ export default function Grid({ puzzle }: GridProps) {
         return;
       }
     }
-    document.addEventListener("keydown", handleKeyDown);
+
+    if (!isWon) document.addEventListener("keydown", handleKeyDown);
+
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [focusedIndex, puzzle, solveDigits]);
+  }, [focusedIndex, isWon, puzzle, solveDigits]);
 
   return (
     <>
-      {solveDigits !== undefined &&
+      {solveDigits &&
         solveDigits.map((d, i) => (
           <Square
             key={i}
