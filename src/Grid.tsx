@@ -23,10 +23,27 @@ type GridProps = { puzzle: string[] };
 
 export default function Grid({ puzzle }: GridProps) {
   const [solveDigits, setSolveDigits] = useState(puzzle);
-  const [conflictedDigits, setConflictedDigits] = useState(
-    initialConflictedDigits,
-  );
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
+  const conflictedDigits = calcConflictedDigits();
+
+  function calcConflictedDigits() {
+    const conflictedAcc = [...initialConflictedDigits];
+    for (const [index1, digit1] of solveDigits.entries()) {
+      if (digit1 === "0") continue;
+      const cell1 = getCell(index1);
+      for (const [index2, digit2] of solveDigits.entries()) {
+        if (index1 === index2) continue;
+        if (
+          (cell1 === getCell(index2) ||
+            getColumn(index1) === getColumn(index2) ||
+            getRow(index1) === getRow(index2)) &&
+          digit1 === digit2
+        )
+          conflictedAcc[index1] = true;
+      }
+    }
+    return conflictedAcc;
+  }
 
   function calcHighlight(digit: string, index: number) {
     if (index === focusedIndex) return "focus";
@@ -97,26 +114,6 @@ export default function Grid({ puzzle }: GridProps) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [focusedIndex, puzzle, solveDigits]);
-
-  useEffect(() => {
-    const conflictedAcc = [...initialConflictedDigits];
-    for (const [index1, digit1] of solveDigits.entries()) {
-      if (digit1 === "0") continue;
-      const cell1 = getCell(index1);
-      for (const [index2, digit2] of solveDigits.entries()) {
-        if (index1 === index2) continue;
-        if (
-          (cell1 === getCell(index2) ||
-            getColumn(index1) === getColumn(index2) ||
-            getRow(index1) === getRow(index2)) &&
-          digit1 === digit2
-        )
-          conflictedAcc[index1] = true;
-      }
-    }
-    if (JSON.stringify(conflictedAcc) !== JSON.stringify(conflictedDigits))
-      setConflictedDigits(conflictedAcc);
-  }, [conflictedDigits, solveDigits]);
 
   return (
     <>
