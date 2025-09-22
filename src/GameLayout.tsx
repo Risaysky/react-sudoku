@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Square from "./Square";
+import Keyboard from "./Keyboard";
 
 const initialConflictedDigits = Array.from({ length: 81 }, () => false);
 const GRID_WIDTH = 9;
 const CELL_WIDTH = 3;
+
+const gutterTemplate = Array.from({ length: 8 });
 
 function getCell(index: number) {
   const cellRow = Math.floor(getRow(index) / CELL_WIDTH);
@@ -76,6 +79,19 @@ export default function Grid({ puzzle }: GridProps) {
     setFocusedIndex(index);
   }
 
+  const changeSquare = useCallback(
+    function (digit: string, index: number | null) {
+      if (index === null) return;
+      if (puzzle[index] !== "0") return;
+      setSolveDigits((solveDigits) => {
+        const temp = [...solveDigits];
+        temp[index] = digit === solveDigits[index] ? "0" : digit;
+        return temp;
+      });
+    },
+    [puzzle],
+  );
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (focusedIndex === null) return;
@@ -96,23 +112,13 @@ export default function Grid({ puzzle }: GridProps) {
         setFocusedIndex(focusedIndex - 1);
       }
 
-      if (puzzle[focusedIndex] !== "0") return;
-
-      if (e.key === "Backspace" || e.key === solveDigits[focusedIndex]) {
-        setSolveDigits((solveDigits) => {
-          const temp = [...solveDigits];
-          temp[focusedIndex] = "0";
-          return temp;
-        });
+      if (e.key === "Backspace") {
+        changeSquare("0", focusedIndex);
         return;
       }
 
       if (e.key.match(/^[1-9]$/)) {
-        setSolveDigits((solveDigits) => {
-          const temp = [...solveDigits];
-          temp[focusedIndex] = e.key;
-          return temp;
-        });
+        changeSquare(e.key, focusedIndex);
         return;
       }
     }
@@ -120,22 +126,39 @@ export default function Grid({ puzzle }: GridProps) {
     if (!isWon) document.addEventListener("keydown", handleKeyDown);
 
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [focusedIndex, isWon, puzzle, solveDigits]);
+  }, [changeSquare, focusedIndex, isWon, puzzle, solveDigits]);
 
   return (
     <>
-      {solveDigits &&
-        solveDigits.map((d, i) => (
-          <Square
+      <div className="relative grid aspect-square w-full grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl bg-slate-50 shadow-md/40 select-none">
+        {solveDigits &&
+          solveDigits.map((d, i) => (
+            <Square
+              key={i}
+              index={i}
+              isPresolved={puzzle[i] !== "0"}
+              isConflicted={conflictedDigits[i]}
+              digit={d}
+              highlight={calcHighlight(d, i)}
+              onFocus={handleFocus}
+            />
+          ))}
+        {gutterTemplate.map((_, i) => (
+          <div
             key={i}
-            index={i}
-            isPresolved={puzzle[i] !== "0"}
-            isConflicted={conflictedDigits[i]}
-            digit={d}
-            highlight={calcHighlight(d, i)}
-            onFocus={handleFocus}
+            className={`pointer-events-none absolute h-0.5 w-full ${(i + 1) % 3 === 0 ? "z-10 bg-slate-400" : "bg-slate-300"}`}
+            style={{ top: `calc(${i + 1}/9 * 100% - .125rem)` }}
           />
         ))}
+        {gutterTemplate.map((_, i) => (
+          <div
+            key={i}
+            className={`pointer-events-none absolute h-full w-0.5 ${(i + 1) % 3 === 0 ? "z-10 bg-slate-400" : "bg-slate-300"}`}
+            style={{ left: `calc(${i + 1}/9 * 100% - .125rem)` }}
+          />
+        ))}
+      </div>
+      <Keyboard changeSquare={changeSquare} focusedIndex={focusedIndex} />
     </>
   );
 }

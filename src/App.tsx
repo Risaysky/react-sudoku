@@ -3,8 +3,7 @@ import mediumPuzzles from "./data/medium.txt?raw";
 import hardPuzzles from "./data/hard.txt?raw";
 import diabolicalPuzzles from "./data/diabolical.txt?raw";
 import { useState, type FormEvent } from "react";
-import GridLayout from "./GridLayout";
-import Grid from "./Grid";
+import GameLayout from "./GameLayout";
 
 type difficultyType = "easy" | "medium" | "hard" | "diabolical";
 
@@ -56,7 +55,7 @@ export default function App() {
             className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center"
           />
           <select
-            className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center"
+            className="h-9 w-1/3 cursor-pointer rounded-2xl bg-slate-50 text-center"
             onChange={(e) =>
               setDifficultyInput(e.target.value as difficultyType)
             }
@@ -70,14 +69,14 @@ export default function App() {
             Go
           </button>
         </form>
-        <GridLayout>
-          {typeof puzzleIndex === "number" && (
-            <Grid
-              puzzle={getPuzzle(puzzleIndex, puzzleDifficulty)}
-              key={`${puzzleIndex}-${puzzleDifficulty}`}
-            />
-          )}
-        </GridLayout>
+        <GameLayout
+          puzzle={
+            typeof puzzleIndex === "number"
+              ? getPuzzle(puzzleIndex, puzzleDifficulty)
+              : []
+          }
+          key={`${puzzleIndex}-${puzzleDifficulty}`}
+        />
       </main>
       <footer className="flex justify-center pb-1 text-slate-100">
         Puzzles by&nbsp;
