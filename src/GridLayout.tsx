@@ -7,7 +7,7 @@ type GridProps = { children?: ReactNode };
 export default function GridLayout({ children }: GridProps) {
   return (
     <>
-      <div className="relative grid h-150 w-150 grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl bg-slate-50 shadow-md/40 select-none">
+      <div className="relative grid aspect-square w-full grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl bg-slate-50 shadow-md/40 select-none">
         {children}
         {gutterTemplate.map((_, i) => (
           <div

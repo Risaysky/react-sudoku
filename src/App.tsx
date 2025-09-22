@@ -42,10 +42,10 @@ export default function App() {
 
   return (
     <>
-      <main className="flex flex-col items-center justify-center gap-7">
+      <main className="mx-auto flex w-full max-w-150 flex-col items-center justify-center gap-7 px-3">
         <form
           onSubmit={handleSubmit}
-          className="flex w-150 items-center justify-start gap-3"
+          className="flex min-w-1/2 items-center justify-between md:self-start"
         >
           <input
             value={indexInput}
@@ -53,10 +53,10 @@ export default function App() {
             pattern="^\d{1,5}$"
             required
             placeholder="0-99999"
-            className="h-9 w-25 rounded-2xl bg-slate-50 text-center"
+            className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center"
           />
           <select
-            className="h-9 w-25 rounded-2xl bg-slate-50 text-center"
+            className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center"
             onChange={(e) =>
               setDifficultyInput(e.target.value as difficultyType)
             }
@@ -66,7 +66,7 @@ export default function App() {
             <option value="hard">Hard</option>
             <option value="diabolical">Diabolical</option>
           </select>
-          <button className="h-9 w-15 cursor-pointer rounded-2xl bg-sky-200 text-center active:bg-sky-200/70">
+          <button className="h-9 w-1/4 cursor-pointer rounded-2xl bg-sky-200 text-center active:bg-sky-200/70">
             Go
           </button>
         </form>
