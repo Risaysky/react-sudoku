@@ -130,7 +130,7 @@ export default function Grid({ puzzle }: GridProps) {
 
   return (
     <>
-      <div className="relative grid aspect-square w-full grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl bg-slate-50 shadow-md/40 select-none">
+      <div className="relative grid aspect-square w-full grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl bg-slate-50 text-[clamp(1.125rem,6vw,2.25rem)] shadow-md/40 select-none">
         {solveDigits &&
           solveDigits.map((d, i) => (
             <Square

@@ -52,10 +52,10 @@ export default function App() {
             pattern="^\d{1,5}$"
             required
             placeholder="0-99999"
-            className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center"
+            className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center shadow-md/40"
           />
           <select
-            className="h-9 w-1/3 cursor-pointer rounded-2xl bg-slate-50 text-center"
+            className="h-9 w-1/3 cursor-pointer rounded-2xl bg-slate-50 text-center shadow-md/40"
             onChange={(e) =>
               setDifficultyInput(e.target.value as difficultyType)
             }
@@ -65,7 +65,7 @@ export default function App() {
             <option value="hard">Hard</option>
             <option value="diabolical">Diabolical</option>
           </select>
-          <button className="h-9 w-1/4 cursor-pointer rounded-2xl bg-sky-200 text-center active:bg-sky-200/70">
+          <button className="h-9 w-1/4 cursor-pointer rounded-2xl bg-sky-200 text-center shadow-md/40 active:bg-sky-200/70">
             Go
           </button>
         </form>
