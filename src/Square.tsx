@@ -40,7 +40,7 @@ export default function Square({
 
   return (
     <div
-      className={`opacity content-center text-center focus:outline-none ${textColor} ${bgColor}`}
+      className={`opacity h-full w-full content-center text-center focus:outline-none ${textColor} ${bgColor}`}
       onFocus={() => {
         onFocus(index);
       }}

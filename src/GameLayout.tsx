@@ -6,8 +6,6 @@ const initialConflictedDigits = Array.from({ length: 81 }, () => false);
 const GRID_WIDTH = 9;
 const CELL_WIDTH = 3;
 
-const gutterTemplate = Array.from({ length: 8 });
-
 function getCell(index: number) {
   const cellRow = Math.floor(getRow(index) / CELL_WIDTH);
   const cellColumn = Math.floor(getColumn(index) / CELL_WIDTH);
@@ -143,18 +141,18 @@ export default function Grid({ puzzle }: GridProps) {
               onFocus={handleFocus}
             />
           ))}
-        {gutterTemplate.map((_, i) => (
+        {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
             className={`pointer-events-none absolute h-0.5 w-full ${(i + 1) % 3 === 0 ? "z-10 bg-slate-400" : "bg-slate-300"}`}
-            style={{ top: `calc(${i + 1}/9 * 100% - .125rem)` }}
+            style={{ top: `calc(${i + 1}/9 * 100% - 2px / 2)` }}
           />
         ))}
-        {gutterTemplate.map((_, i) => (
+        {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
             className={`pointer-events-none absolute h-full w-0.5 ${(i + 1) % 3 === 0 ? "z-10 bg-slate-400" : "bg-slate-300"}`}
-            style={{ left: `calc(${i + 1}/9 * 100% - .125rem)` }}
+            style={{ left: `calc(${i + 1}/9 * 100% - 2px / 2` }}
           />
         ))}
       </div>
