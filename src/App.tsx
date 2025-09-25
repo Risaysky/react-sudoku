@@ -4,6 +4,7 @@ import hardPuzzles from "./data/hard.txt?raw";
 import diabolicalPuzzles from "./data/diabolical.txt?raw";
 import { useState, type FormEvent } from "react";
 import GameLayout from "./GameLayout";
+import { MdOpenInNew } from "react-icons/md";
 
 type difficultyType = "easy" | "medium" | "hard" | "diabolical";
 
@@ -78,26 +79,15 @@ export default function App() {
           key={`${puzzleIndex}-${puzzleDifficulty}`}
         />
       </main>
-      <footer className="flex justify-center pb-1 text-slate-100">
+      <footer className="flex items-center justify-center pb-1 text-slate-100">
         Puzzles by&nbsp;
         <a
-          className="flex items-baseline gap-0.5 text-sky-300 hover:underline"
+          className="flex items-center gap-0.5 text-sky-300 hover:underline"
           href="https://github.com/grantm/sudoku-exchange-puzzle-bank/tree/master"
           target="_blank"
         >
           grantm
-          <svg
-            stroke="currentColor"
-            fill="currentColor"
-            strokeWidth="0"
-            version="1.1"
-            viewBox="0 0 17 17"
-            height=".75rem"
-            width=".75rem"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M15 2v7.5h-1v-5.668l-9.334 9.334-0.707-0.707 9.459-9.459h-5.918v-1h7.5zM11 16h-10v-10h6.574v-1h-7.574v12h12v-7.714h-1v6.714z"></path>
-          </svg>
+          <MdOpenInNew />
         </a>
       </footer>
     </>

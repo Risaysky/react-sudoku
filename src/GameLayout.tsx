@@ -25,15 +25,16 @@ type GridProps = { puzzle: string[] };
 export default function Grid({ puzzle }: GridProps) {
   const [solveDigits, setSolveDigits] = useState(puzzle);
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
+  const [isMarking, setIsMarking] = useState(true);
   const conflictedDigits = calcConflictedDigits();
   const isWon =
-    solveDigits.every((digit) => digit !== "0") &&
+    solveDigits.every((digit) => digit !== "0" && digit.length === 1) &&
     conflictedDigits.every((conflict) => conflict === false);
 
   function calcConflictedDigits() {
     const conflictedAcc = [...initialConflictedDigits];
     for (const [index1, digit1] of solveDigits.entries()) {
-      if (digit1 === "0") continue;
+      if (digit1 === "0" || digit1.length > 1) continue;
       const cell1 = getCell(index1);
       for (const [index2, digit2] of solveDigits.entries()) {
         if (index1 === index2) continue;
@@ -50,16 +51,15 @@ export default function Grid({ puzzle }: GridProps) {
   }
 
   function calcHighlight(digit: string, index: number) {
-    if (isWon) return "default";
+    if (isWon || focusedIndex === null) return "default";
 
     if (index === focusedIndex) return "focus";
-
-    if (focusedIndex === null) return "default";
 
     if (
       solveDigits[focusedIndex] === digit &&
       focusedIndex !== index &&
-      digit !== "0"
+      digit !== "0" &&
+      digit.length === 1
     )
       return "same-digit";
 
@@ -73,19 +73,30 @@ export default function Grid({ puzzle }: GridProps) {
     return "default";
   }
 
-  function handleFocus(index: number) {
-    setFocusedIndex(index);
-  }
-
   const changeSquare = useCallback(
-    function (digit: string, index: number | null) {
+    function (digit: string, index: number | null, marking: boolean = false) {
       if (index === null) return;
       if (puzzle[index] !== "0") return;
-      setSolveDigits((solveDigits) => {
-        const temp = [...solveDigits];
-        temp[index] = digit === solveDigits[index] ? "0" : digit;
-        return temp;
-      });
+
+      if (marking) {
+        setSolveDigits((solveDigits) => {
+          const temp = [...solveDigits];
+          if (temp[index].length === 1) {
+            temp[index] = "0" + digit;
+          } else if (temp[index].includes(digit)) {
+            temp[index] = temp[index].replace(digit, "");
+          } else {
+            temp[index] = temp[index] + digit;
+          }
+          return temp;
+        });
+      } else {
+        setSolveDigits((solveDigits) => {
+          const temp = [...solveDigits];
+          temp[index] = digit === solveDigits[index] ? "0" : digit;
+          return temp;
+        });
+      }
     },
     [puzzle],
   );
@@ -116,7 +127,7 @@ export default function Grid({ puzzle }: GridProps) {
       }
 
       if (e.key.match(/^[1-9]$/)) {
-        changeSquare(e.key, focusedIndex);
+        changeSquare(e.key, focusedIndex, isMarking);
         return;
       }
     }
@@ -124,11 +135,11 @@ export default function Grid({ puzzle }: GridProps) {
     if (!isWon) document.addEventListener("keydown", handleKeyDown);
 
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [changeSquare, focusedIndex, isWon, puzzle, solveDigits]);
+  }, [changeSquare, focusedIndex, isMarking, isWon, puzzle, solveDigits]);
 
   return (
     <>
-      <div className="relative grid aspect-square w-full grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl bg-slate-50 text-[clamp(1.125rem,6vw,2.25rem)] shadow-md/40 select-none">
+      <div className="relative grid aspect-square w-full grid-cols-9 grid-rows-9 overflow-hidden rounded-3xl bg-slate-50 shadow-md/40 select-none">
         {solveDigits &&
           solveDigits.map((d, i) => (
             <Square
@@ -138,7 +149,7 @@ export default function Grid({ puzzle }: GridProps) {
               isConflicted={conflictedDigits[i]}
               digit={d}
               highlight={calcHighlight(d, i)}
-              onFocus={handleFocus}
+              onFocus={() => setFocusedIndex(i)}
             />
           ))}
         {Array.from({ length: 8 }).map((_, i) => (
@@ -156,7 +167,12 @@ export default function Grid({ puzzle }: GridProps) {
           />
         ))}
       </div>
-      <Keyboard changeSquare={changeSquare} focusedIndex={focusedIndex} />
+      <Keyboard
+        changeSquare={changeSquare}
+        focusedIndex={focusedIndex}
+        isMarking={isMarking}
+        onToggleMarking={() => setIsMarking((s) => !s)}
+      />
     </>
   );
 }

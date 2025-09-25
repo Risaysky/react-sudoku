@@ -32,21 +32,28 @@ export default function Square({
   const bgColor = isConflicted
     ? conflictedStyle[highlight]
     : nonConflictedStyle[highlight];
+
   const textColor = isPresolved
     ? "text-slate-900"
     : isConflicted
       ? "text-red-400"
       : "text-blue-500";
+  const digitDisplay =
+    digit.length === 1
+      ? digit === "0"
+        ? ""
+        : digit
+      : digit.slice(1).split("").sort().join("");
 
   return (
     <div
-      className={`opacity h-full w-full content-center text-center focus:outline-none ${textColor} ${bgColor}`}
+      className={`opacity h-full w-full content-center text-center focus:outline-none ${digit.length === 1 ? "text-[clamp(1.125rem,6vw,2.25rem)]" : "text-sm"} ${textColor} ${bgColor}`}
       onFocus={() => {
         onFocus(index);
       }}
       tabIndex={isPresolved ? -1 : 0}
     >
-      {digit === "0" ? "" : digit}
+      {digitDisplay}
     </div>
   );
 }
