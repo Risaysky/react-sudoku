@@ -47,13 +47,26 @@ export default function Square({
 
   return (
     <div
-      className={`opacity h-full w-full content-center text-center focus:outline-none ${digit.length === 1 ? "text-[clamp(1.125rem,6vw,2.25rem)]" : "text-sm"} ${textColor} ${bgColor}`}
+      className={`opacity h-full w-full content-center text-center focus:outline-none ${textColor} ${bgColor}`}
+      style={{ containerType: "inline-size" }}
       onFocus={() => {
         onFocus(index);
       }}
       tabIndex={isPresolved ? -1 : 0}
     >
-      {digitDisplay}
+      <span
+        style={
+          digit.length === 1
+            ? {
+                fontSize: "50cqw",
+              }
+            : {
+                fontSize: `min(calc(50cqw / ${digit.length} * 3.5 ), 30cqw)`,
+              }
+        }
+      >
+        {digitDisplay}
+      </span>
     </div>
   );
 }

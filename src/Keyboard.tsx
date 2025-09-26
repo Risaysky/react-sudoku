@@ -21,25 +21,28 @@ export default function Keyboard({
   focusedIndex,
 }: KeyboardProps) {
   return (
-    <div className="flex h-14 w-full justify-between gap-3 rounded-lg bg-slate-50 px-3 py-3 text-2xl shadow-md/40">
+    <div
+      className="flex h-14 w-full items-center justify-between gap-3 rounded-lg bg-slate-50 px-3 py-3 text-2xl shadow-md/40"
+      style={{ containerType: "inline-size" }}
+    >
       {keys.map((key, keyIndex) => (
         <button
           key={keyIndex}
           onClick={() => changeSquare(key, focusedIndex, isMarking)}
-          className="w-full max-w-11 content-center rounded-md text-center hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
+          className="w-1/11 content-center rounded-md text-center text-[5cqw] hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
         >
           {key}
         </button>
       ))}
       <button
         onClick={() => changeSquare("0", focusedIndex)}
-        className="flex w-full max-w-11 items-center justify-center rounded-md hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
+        className="flex w-1/11 min-w-5 items-center justify-center rounded-md hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
       >
         <CiEraser size="100%" />
       </button>
       <button
         onClick={onToggleMarking}
-        className={`flex w-full max-w-11 items-center justify-center rounded-md active:bg-sky-200/80 ${isMarking ? "bg-sky-200" : "hover:bg-sky-200/50"} hover:cursor-pointer`}
+        className={`flex w-1/11 min-w-5 items-center justify-center rounded-md active:bg-sky-200/80 ${isMarking ? "bg-sky-200" : "hover:bg-sky-200/50"} hover:cursor-pointer`}
       >
         <BsPencil size="75%" />
       </button>

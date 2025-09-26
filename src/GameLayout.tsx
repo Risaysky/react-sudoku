@@ -25,7 +25,7 @@ type GridProps = { puzzle: string[] };
 export default function Grid({ puzzle }: GridProps) {
   const [solveDigits, setSolveDigits] = useState(puzzle);
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
-  const [isMarking, setIsMarking] = useState(true);
+  const [isMarking, setIsMarking] = useState(false);
   const conflictedDigits = calcConflictedDigits();
   const isWon =
     solveDigits.every((digit) => digit !== "0" && digit.length === 1) &&
