@@ -4,47 +4,45 @@ import { CiEraser } from "react-icons/ci";
 const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 type KeyboardProps = {
-  isMarking: boolean;
-  onToggleMarking: () => void;
+  writeMode: "normal" | "center" | "corner";
+  changeWriteMode: () => void;
   changeSquare: (
     digit: string,
     index: number | null,
-    isMarking?: boolean,
+    writeMode?: "normal" | "center" | "corner",
   ) => void;
   focusedIndex: number | null;
 };
 
 export default function Keyboard({
-  isMarking,
-  onToggleMarking,
+  writeMode,
+  changeWriteMode,
   changeSquare,
   focusedIndex,
 }: KeyboardProps) {
   return (
-    <div
-      className="flex h-14 w-full items-center justify-between gap-3 rounded-lg bg-slate-50 px-3 py-3 text-2xl shadow-md/40"
-      style={{ containerType: "inline-size" }}
-    >
+    <div className="grid w-full grid-cols-11 items-center gap-0.5 gap-y-2 rounded-lg bg-slate-50 px-3 py-3 shadow-md/40 select-none">
       {keys.map((key, keyIndex) => (
         <button
           key={keyIndex}
-          onClick={() => changeSquare(key, focusedIndex, isMarking)}
-          className="w-1/11 content-center rounded-md text-center text-[5cqw] hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
+          onClick={() => changeSquare(key, focusedIndex, writeMode)}
+          className={`@container relative flex aspect-square items-center justify-center rounded-md hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80`}
         >
-          {key}
+          <span className="text-[60cqw]">{key}</span>
         </button>
       ))}
       <button
         onClick={() => changeSquare("0", focusedIndex)}
-        className="flex w-1/11 min-w-5 items-center justify-center rounded-md hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
+        className="@container flex aspect-square items-center justify-center rounded-md hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
       >
-        <CiEraser size="100%" />
+        <CiEraser className="text-[50cqw]" />
       </button>
       <button
-        onClick={onToggleMarking}
-        className={`flex w-1/11 min-w-5 items-center justify-center rounded-md active:bg-sky-200/80 ${isMarking ? "bg-sky-200" : "hover:bg-sky-200/50"} hover:cursor-pointer`}
+        onClick={changeWriteMode}
+        className="@container relative flex aspect-square flex-col items-center justify-center rounded-md hover:cursor-pointer hover:bg-sky-200/50 active:bg-sky-200/80"
       >
-        <BsPencil size="75%" />
+        <span className="absolute -top-1 text-[25cqw]">{writeMode}</span>
+        <BsPencil className="text-[50cqw]" />
       </button>
     </div>
   );

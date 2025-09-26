@@ -25,7 +25,9 @@ type GridProps = { puzzle: string[] };
 export default function Grid({ puzzle }: GridProps) {
   const [solveDigits, setSolveDigits] = useState(puzzle);
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
-  const [isMarking, setIsMarking] = useState(false);
+  const [writeMode, setWriteMode] = useState<"normal" | "center" | "corner">(
+    "normal",
+  );
   const conflictedDigits = calcConflictedDigits();
   const isWon =
     solveDigits.every((digit) => digit !== "0" && digit.length === 1) &&
@@ -74,32 +76,78 @@ export default function Grid({ puzzle }: GridProps) {
   }
 
   const changeSquare = useCallback(
-    function (digit: string, index: number | null, marking: boolean = false) {
+    function (
+      digit: string,
+      index: number | null,
+      writeMode: string = "normal",
+    ) {
       if (index === null) return;
       if (puzzle[index] !== "0") return;
 
-      if (marking) {
-        setSolveDigits((solveDigits) => {
-          const temp = [...solveDigits];
-          if (temp[index].length === 1) {
-            temp[index] = "0" + digit;
-          } else if (temp[index].includes(digit)) {
-            temp[index] = temp[index].replace(digit, "");
-          } else {
-            temp[index] = temp[index] + digit;
-          }
-          return temp;
-        });
-      } else {
-        setSolveDigits((solveDigits) => {
-          const temp = [...solveDigits];
-          temp[index] = digit === solveDigits[index] ? "0" : digit;
-          return temp;
-        });
+      switch (writeMode) {
+        case "normal":
+          setSolveDigits((solveDigits) => {
+            const temp = [...solveDigits];
+            temp[index] = digit === solveDigits[index] ? "0" : digit;
+            return temp;
+          });
+          break;
+
+        case "corner":
+          setSolveDigits((solveDigits) => {
+            const temp = [...solveDigits];
+            if (temp[index].length === 1) {
+              temp[index] = digit + "0";
+            } else {
+              if (new RegExp(digit + "(?=.*0)").test(temp[index])) {
+                temp[index] = temp[index].replace(
+                  new RegExp(digit + "(?=.*0)"),
+                  "",
+                );
+              } else {
+                temp[index] = digit + temp[index];
+              }
+            }
+            return temp;
+          });
+          break;
+
+        case "center":
+          setSolveDigits((solveDigits) => {
+            const temp = [...solveDigits];
+            if (temp[index].length === 1) {
+              temp[index] = "0" + digit;
+            } else {
+              if (new RegExp("(?<=0.*)" + digit).test(temp[index])) {
+                temp[index] = temp[index].replace(
+                  new RegExp("(?<=0.*)" + digit),
+                  "",
+                );
+              } else {
+                temp[index] = temp[index] + digit;
+              }
+            }
+            return temp;
+          });
+          break;
       }
     },
     [puzzle],
   );
+
+  function changeWriteMode() {
+    switch (writeMode) {
+      case "normal":
+        setWriteMode("corner");
+        break;
+      case "corner":
+        setWriteMode("center");
+        break;
+      case "center":
+        setWriteMode("normal");
+        break;
+    }
+  }
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -127,7 +175,7 @@ export default function Grid({ puzzle }: GridProps) {
       }
 
       if (e.key.match(/^[1-9]$/)) {
-        changeSquare(e.key, focusedIndex, isMarking);
+        changeSquare(e.key, focusedIndex, writeMode);
         return;
       }
     }
@@ -135,7 +183,7 @@ export default function Grid({ puzzle }: GridProps) {
     if (!isWon) document.addEventListener("keydown", handleKeyDown);
 
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [changeSquare, focusedIndex, isMarking, isWon, puzzle, solveDigits]);
+  }, [changeSquare, focusedIndex, writeMode, isWon, puzzle, solveDigits]);
 
   return (
     <>
@@ -170,8 +218,8 @@ export default function Grid({ puzzle }: GridProps) {
       <Keyboard
         changeSquare={changeSquare}
         focusedIndex={focusedIndex}
-        isMarking={isMarking}
-        onToggleMarking={() => setIsMarking((s) => !s)}
+        writeMode={writeMode}
+        changeWriteMode={changeWriteMode}
       />
     </>
   );
