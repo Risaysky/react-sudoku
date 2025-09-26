@@ -50,6 +50,7 @@ export default function App() {
           <input
             value={indexInput}
             onChange={(e) => setIndexInput(e.target.value)}
+            type="number"
             pattern="^\d{1,5}$"
             required
             placeholder="0-99999"

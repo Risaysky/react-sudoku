@@ -135,55 +135,68 @@ export default function Grid({ puzzle }: GridProps) {
     [puzzle],
   );
 
-  function changeWriteMode() {
-    switch (writeMode) {
-      case "normal":
-        setWriteMode("corner");
-        break;
-      case "corner":
-        setWriteMode("center");
-        break;
-      case "center":
-        setWriteMode("normal");
-        break;
-    }
-  }
+  const changeWriteMode = useCallback(
+    function () {
+      switch (writeMode) {
+        case "normal":
+          setWriteMode("corner");
+          break;
+        case "corner":
+          setWriteMode("center");
+          break;
+        case "center":
+          setWriteMode("normal");
+          break;
+      }
+    },
+    [writeMode],
+  );
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (focusedIndex === null) return;
 
-      if (e.key === "ArrowUp" && getRow(focusedIndex) > 0) {
+      if (
+        (e.key === "ArrowUp" || e.key.toLocaleLowerCase() === "k") &&
+        getRow(focusedIndex) > 0
+      ) {
         setFocusedIndex(focusedIndex - GRID_WIDTH);
       } else if (
-        e.key === "ArrowDown" &&
+        (e.key === "ArrowDown" || e.key.toLocaleLowerCase() === "j") &&
         getRow(focusedIndex) < GRID_WIDTH - 1
       ) {
         setFocusedIndex(focusedIndex + GRID_WIDTH);
       } else if (
-        e.key === "ArrowRight" &&
+        (e.key === "ArrowRight" || e.key.toLocaleLowerCase() === "l") &&
         getColumn(focusedIndex) < GRID_WIDTH - 1
       ) {
         setFocusedIndex(focusedIndex + 1);
-      } else if (e.key === "ArrowLeft" && getColumn(focusedIndex) > 0) {
+      } else if (
+        (e.key === "ArrowLeft" || e.key.toLocaleLowerCase() === "h") &&
+        getColumn(focusedIndex) > 0
+      ) {
         setFocusedIndex(focusedIndex - 1);
-      }
-
-      if (e.key === "Backspace") {
+      } else if (e.key.toLowerCase() === "c") {
+        changeWriteMode();
+      } else if (e.key === "Backspace" || e.key.toLocaleLowerCase() === "d") {
         changeSquare("0", focusedIndex);
-        return;
-      }
-
-      if (e.key.match(/^[1-9]$/)) {
+      } else if (e.key.match(/^[1-9]$/)) {
         changeSquare(e.key, focusedIndex, writeMode);
-        return;
       }
     }
 
     if (!isWon) document.addEventListener("keydown", handleKeyDown);
 
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [changeSquare, focusedIndex, writeMode, isWon, puzzle, solveDigits]);
+  }, [
+    changeSquare,
+    focusedIndex,
+    writeMode,
+    isWon,
+    puzzle,
+    solveDigits,
+    changeWriteMode,
+  ]);
 
   return (
     <>
