@@ -51,7 +51,8 @@ export default function App() {
             value={indexInput}
             onChange={(e) => setIndexInput(e.target.value)}
             type="number"
-            pattern="^\d{1,4}$"
+            min="0"
+            max="9999"
             required
             placeholder="0-9999"
             className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center shadow-md/40"
