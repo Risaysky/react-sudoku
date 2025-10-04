@@ -45,7 +45,7 @@ export default function App() {
       <main className="mx-auto flex w-full max-w-150 flex-col items-center justify-center gap-7 px-3">
         <form
           onSubmit={handleSubmit}
-          className="flex min-w-1/2 items-center justify-between md:self-start"
+          className="flex min-w-1/2 items-center gap-3 md:self-start"
         >
           <input
             value={indexInput}
@@ -55,10 +55,10 @@ export default function App() {
             max="9999"
             required
             placeholder="0-9999"
-            className="h-9 w-1/3 rounded-2xl bg-slate-50 text-center shadow-md/40"
+            className="h-9 w-1/3 min-w-fit rounded-2xl bg-slate-50 text-center shadow-md/40"
           />
           <select
-            className="h-9 w-1/3 cursor-pointer rounded-2xl bg-slate-50 text-center shadow-md/40"
+            className="h-9 w-1/3 min-w-fit cursor-pointer rounded-2xl bg-slate-50 text-center shadow-md/40"
             onChange={(e) =>
               setDifficultyInput(e.target.value as difficultyType)
             }
@@ -68,7 +68,7 @@ export default function App() {
             <option value="hard">Hard</option>
             <option value="diabolical">Diabolical</option>
           </select>
-          <button className="h-9 w-1/4 cursor-pointer rounded-2xl bg-sky-200 text-center shadow-md/40 active:bg-sky-200/70">
+          <button className="h-9 w-1/3 min-w-fit cursor-pointer rounded-2xl bg-sky-200 px-3 text-center shadow-md/40 active:bg-sky-200/70">
             Go
           </button>
         </form>
